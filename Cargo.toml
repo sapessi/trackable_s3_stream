@@ -1,0 +1,17 @@
+[package]
+name = "trackable_s3_stream"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+aws-sdk-s3 = "0.21.0"
+aws-smithy-http = "0.51.0"
+futures = "0.3.25"
+hyper = { version = "0.14.23", features = ["stream"] }
+tokio = { version = "1.23.0", features = ["fs", "macros"] }
+
+[dev-dependencies]
+indicatif = "0.17.2"
+aws-config = "0.51.0"
