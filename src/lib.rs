@@ -116,7 +116,7 @@ impl<I: AsyncReadExt + Unpin> Stream for TrackableBodyStream<I> {
 
     fn poll_next(self: std::pin::Pin<&mut Self>, cx: &mut std::task::Context<'_>) -> Poll<Option<Self::Item>> {
         let mut_self = self.get_mut();
-        let mut buf = vec!(0u8; mut_self.buffer_size);
+        let mut buf = Vec::with_capacity(mut_self.buffer_size);
         
         match Future::poll(Box::pin(mut_self.input.read_buf(&mut buf)).as_mut(), cx) {
             Poll::Ready(res) => {
@@ -128,11 +128,11 @@ impl<I: AsyncReadExt + Unpin> Stream for TrackableBodyStream<I> {
                     return Poll::Ready(None);
                 }
                 mut_self.cur_read += read_op as u64;
-                buf.resize(read_op, 0u8);
+                //buf.resize(read_op, 0u8);
                 if mut_self.callback.is_some() {
                     mut_self.callback.as_ref().unwrap()(mut_self.file_size, mut_self.cur_read, read_op as u64);
                 }
-                Poll::Ready(Some(Ok(Bytes::from(buf))))
+                Poll::Ready(Some(Ok(Bytes::from(Vec::from(&buf[0..read_op])))))
             },
             Poll::Pending => {
                 Poll::Pending
